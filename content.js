@@ -728,75 +728,74 @@ function reliablyClickElement(element) {
 }
 
 // Locate the primary quiz submit button (First Submit Button on page)
+// Accepts any visible/clickable submit button without strict class combination restrictions.
+// Extracts dynamic XYZ variable when cds-<XYZ> is present.
 function findFirstSubmitButton() {
-    // 1. Match candidates via stable attributes and containers (avoiding hardcoded cds-116/cds-288)
+    const candidates = [];
+
+    // 1. Gather all potential submit button candidates across standard containers & page
     const specificSelectors = [
         '[data-e2e="AttemptSubmitControls_buttons"] button',
-        'button.cds-button-disableElevation.cds-button-primary.css-dxhcv5',
-        'button.cds-button-primary.css-dxhcv5',
+        '[data-e2e="AttemptSubmitControls"] button',
         'button[data-testid="submit-button"]',
-        'button[aria-label="Submit"][type="button"]',
-        'button[aria-label="Submit"]'
+        'button[aria-label="Submit" i]',
+        'button.cds-button-primary',
+        'button'
     ];
 
     for (const sel of specificSelectors) {
-        const matches = Array.from(document.querySelectorAll(sel));
-        for (const btn of matches) {
-            // Strictly exclude any button inside the modal dialog
-            if (btn.closest('#dialog-content, [data-testid="SubmitDialog_content"], [data-testid="SubmitDialog_controls"], [role="dialog"], [role="alertdialog"], .cds-modal')) {
-                continue;
-            }
-
-            const isEnabled = !btn.disabled && btn.getAttribute('aria-disabled') !== 'true';
-            const rect = btn.getBoundingClientRect();
-            if (!isEnabled || rect.width === 0 || rect.height === 0) continue;
-
-            const style = window.getComputedStyle(btn);
-            if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
-
-            // Check dynamic cds-<XYZ> class (/^cds-\d{3}$/ or /^cds-\d+$/)
-            const cdsMatch = getCdsDynamicClass(btn);
-            const classList = btn.classList;
-            const hasStableClasses = classList.contains('cds-button-disableElevation') &&
-                                     classList.contains('cds-button-primary') &&
-                                     classList.contains('css-dxhcv5');
-            const hasTestId = btn.getAttribute('data-testid') === 'submit-button';
-            const hasAria = (btn.getAttribute('aria-label') || '').trim().toLowerCase() === 'submit';
-            const isInsideAttemptControls = !!btn.closest('[data-e2e="AttemptSubmitControls_buttons"]');
-
-            // Criteria: dynamic cds-<XYZ> + stable classes/attributes
-            if ((cdsMatch && hasStableClasses) || (isInsideAttemptControls && (hasTestId || hasAria || hasStableClasses)) || hasTestId) {
-                btn._cdsClass = cdsMatch ? cdsMatch.className : 'cds-dynamic';
-                btn._cdsXyz = cdsMatch ? cdsMatch.xyz : 'N/A';
-                console.log(`[Submit] Matched First Submit Button with dynamic class: ${btn._cdsClass} (XYZ: ${btn._cdsXyz})`, btn);
-                return btn;
-            }
-        }
+        document.querySelectorAll(sel).forEach((btn) => {
+            if (!candidates.includes(btn)) candidates.push(btn);
+        });
     }
 
-    // 2. Generic fallback search across the page (outside dialogs)
-    const buttons = Array.from(document.querySelectorAll('button, [role="button"], a.cds-button'));
-    for (const btn of buttons) {
-        if (btn.closest('#dialog-content, [data-testid="SubmitDialog_content"], [data-testid="SubmitDialog_controls"], [role="dialog"], [role="alertdialog"], .cds-modal, div[class*="modal" i]')) {
+    for (const btn of candidates) {
+        // Strictly exclude any button inside a modal dialog
+        if (btn.closest('#dialog-content, [data-testid="SubmitDialog_content"], [data-testid="SubmitDialog_controls"], [role="dialog"], [role="alertdialog"], .cds-modal')) {
+            continue;
+        }
+
+        const testId = (btn.getAttribute('data-testid') || '').toLowerCase();
+        if (testId === 'dialog-submit-button' || testId.includes('cancel') || testId === 'save-button') {
             continue;
         }
 
         const isEnabled = !btn.disabled && btn.getAttribute('aria-disabled') !== 'true';
         if (!isEnabled) continue;
 
+        const rect = btn.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+
+        const style = window.getComputedStyle(btn);
+        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') continue;
+
         const text = (btn.innerText || btn.textContent || '').trim().toLowerCase();
         const aria = (btn.getAttribute('aria-label') || '').trim().toLowerCase();
-        const testId = (btn.getAttribute('data-testid') || '').toLowerCase();
 
-        if (testId === "submit-button" || aria === "submit" || text === "submit" ||
-            /^(submit|submit quiz|submit assignment|submit answers)/i.test(text)) {
-            const rect = btn.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
-                const cdsMatch = getCdsDynamicClass(btn);
-                btn._cdsClass = cdsMatch ? cdsMatch.className : 'cds-dynamic';
-                btn._cdsXyz = cdsMatch ? cdsMatch.xyz : 'N/A';
-                return btn;
-            }
+        // Accept ANY visible submit button matching standard signals
+        const isSubmit = testId === 'submit-button' ||
+                         aria === 'submit' ||
+                         aria.startsWith('submit') ||
+                         text === 'submit' ||
+                         /^(submit|submit quiz|submit assignment|submit answers)/i.test(text) ||
+                         btn.classList.contains('css-dxhcv5');
+
+        if (isSubmit) {
+            // Extract dynamic cds-<XYZ> class (capturing XYZ into variable)
+            const cdsMatch = getCdsDynamicClass(btn);
+            btn._cdsClass = cdsMatch ? cdsMatch.className : 'cds-dynamic';
+            btn._cdsXyz = cdsMatch ? cdsMatch.xyz : 'N/A';
+
+            console.log(`⚡ [Submit Step 1] Matched First Submit Button (XYZ variable: ${btn._cdsXyz}, class: ${btn._cdsClass}):`, {
+                element: btn,
+                xyzVariable: btn._cdsXyz,
+                cdsClass: btn._cdsClass,
+                testId: testId,
+                ariaLabel: btn.getAttribute('aria-label'),
+                text: text
+            });
+
+            return btn;
         }
     }
 
