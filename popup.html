@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #000000;
+      --card: #0a0a0a;
+      --foreground: #ffffff;
+      --muted: #888888;
+      --primary: #ffffff;
+      --primary-hover: #d4d4d4;
+      --secondary: #1a1a1a;
+      --secondary-text: #a3a3a3;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border: #262626;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 380px;
+      padding: 20px;
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(rgba(0, 0, 0, 0.90), rgba(0, 0, 0, 0.90)), url('assets/rahul.png') center/cover no-repeat;
+      color: var(--foreground);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .header {
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--foreground);
+      letter-spacing: -0.03em;
+    }
+    
+    .subtitle {
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .section:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0px;
+    }
+
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .section-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-desc {
+      font-size: 0.72rem;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+
+    /* Provider Selector Tabs */
+    .provider-toggle {
+      display: flex;
+      gap: 6px;
+      background: #141414;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+    }
+
+    .provider-btn {
+      flex: 1;
+      height: 30px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .provider-btn.active {
+      background: var(--card);
+      color: var(--foreground);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      border: 1px solid #333333;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    input, select {
+      flex: 1;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      padding: 0 10px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: var(--foreground);
+      transition: all 0.2s ease;
+      min-width: 0;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+    
+    input::placeholder {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      height: 36px;
+      padding: 0 14px;
+      cursor: pointer;
+      width: 100%;
+      border: none;
+      transition: all 0.15s ease-out;
+    }
+    
+    .btn:active { transform: scale(0.98); }
+
+    .btn-hero {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      height: 42px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+    }
+    .btn-hero:hover:not(:disabled) {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #000;
+    }
+    .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); }
+
+    .btn-accent {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: #ffffff;
+    }
+    .btn-accent:hover:not(:disabled) {
+      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    }
+
+    .btn-secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-text);
+      font-weight: 600;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover:not(:disabled) {
+      color: var(--foreground);
+      background-color: #262626;
+    }
+
+    .btn-danger {
+      background-color: #ef4444;
+      color: #ffffff;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background-color: #dc2626;
+    }
+    
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .meta-row {
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+    }
+
+    .status-text {
+      font-size: 0.73rem;
+      color: #10b981; 
+      font-weight: 500;
+    }
+
+    .link {
+      font-size: 0.7rem; 
+      color: #38bdf8; 
+      text-decoration: none; 
+      font-weight: 600;
+    }
+    .link:hover { text-decoration: underline; }
+
+    #result {
+      font-size: 0.78rem;
+      line-height: 1.45;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background-color: var(--card);
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: none;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+
+    .speedrun-card {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #speedrunActiveBadge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background-color: #10b981;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.7; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.7; }
+    }
+
+    .active-engine-badge {
+      font-size: 0.71rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .footer a {
+      color: var(--foreground);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .footer a:hover { color: #38bdf8; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1 class="title">fck coursera</h1>
+    <span class="subtitle">v1.2.0 • speedrunner</span>
+  </div>
+
+  <!-- AI Provider & API Setup Section -->
+  <div class="section">
+    <div class="section-header">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span class="section-title">🤖 AI Solver Engine</span>
+        <span id="activeEngineText" class="active-engine-badge">Active: Gemini</span>
+      </div>
+      <span class="section-desc">Choose between Google Gemini or OpenRouter (supports free models).</span>
+    </div>
+
+    <!-- Provider Selector Tabs -->
+    <div class="provider-toggle">
+      <button type="button" id="providerGeminiBtn" class="provider-btn active">Google Gemini</button>
+      <button type="button" id="providerOpenRouterBtn" class="provider-btn">OpenRouter</button>
+    </div>
+
+    <!-- Google Gemini Input Panel -->
+    <div id="geminiFields" style="display: flex; flex-direction: column; gap: 6px;">
+      <div class="input-group">
+        <input type="password" id="geminiKeyInput" placeholder="Enter Gemini API Key" autocomplete="off">
+        <button id="saveGeminiBtn" class="btn btn-secondary" style="width: auto;">Save</button>
+      </div>
+      <div class="meta-row">
+        <div id="geminiStatus" class="status-text"></div>
+        <a href="https://ai.google.dev/aistudio" target="_blank" class="link">Get Free Gemini Key →</a>
+      </div>
+    </div>
+
+    <!-- OpenRouter Input Panel -->
+    <div id="openRouterFields" style="display: none; flex-direction: column; gap: 6px;">
+      <div class="input-group">
+        <input type="password" id="openRouterKeyInput" placeholder="OpenRouter API Key (sk-or-...)" autocomplete="off">
+        <button id="saveOpenRouterBtn" class="btn btn-secondary" style="width: auto;">Save</button>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <span style="font-size: 0.72rem; color: var(--muted); min-width: 42px;">Model:</span>
+        <input type="text" id="openRouterModelInput" list="openRouterModelList" placeholder="e.g. openrouter/auto" value="openrouter/auto" style="height: 32px; font-size: 0.76rem;">
+        <datalist id="openRouterModelList">
+          <option value="openrouter/auto">
+          <option value="google/gemini-2.0-flash-exp:free">
+          <option value="meta-llama/llama-3.3-70b-instruct:free">
+          <option value="deepseek/deepseek-chat">
+          <option value="openai/gpt-4o-mini">
+          <option value="anthropic/claude-3.5-haiku">
+        </datalist>
+      </div>
+      <div class="meta-row">
+        <div id="openRouterStatus" class="status-text"></div>
+        <a href="https://openrouter.ai/keys" target="_blank" class="link">Get OpenRouter Key →</a>
+      </div>
+    </div>
+
+    <!-- Graded Assessment Handling Policy -->
+    <div style="display: flex; flex-direction: column; gap: 3px; margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--border);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.72rem; color: var(--muted); font-weight: 600;">Graded Assessments:</span>
+        <span style="font-size: 0.68rem; color: #38bdf8;">Safety Guard</span>
+      </div>
+      <select id="gradedModeSelect" style="height: 30px; border-radius: var(--radius-sm); border: 1px solid var(--border); background-color: var(--card); color: var(--foreground); padding: 0 8px; font-size: 0.74rem;">
+        <option value="pause">Pause on Graded/Timed (Protect Attempts)</option>
+        <option value="auto">Auto-Solve All (Continuous Speedrun)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 1-Click Speedrun Master Card -->
+  <div class="section">
+    <div class="speedrun-card">
+      <div class="section-header">
+        <span class="section-title" style="color: #34d399;">⚡ Complete Entire Course (1-Click)</span>
+        <span class="section-desc">Auto-completes videos/readings, launches every quiz/lab, solves with AI, and submits.</span>
+      </div>
+
+      <div id="speedrunActiveBadge">
+        <span class="pulse-dot"></span>
+        <span id="speedrunActiveText">Speedrun running in background...</span>
+      </div>
+
+      <button id="speedrunAllBtn" class="btn btn-hero">⚡ Speedrun Entire Course</button>
+      <button id="stopSpeedrunBtn" class="btn btn-danger" style="display: none;">⏹️ Stop Speedrun</button>
+    </div>
+  </div>
+
+  <!-- Single Quiz / Assignment Solver -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">📝 Current Assignment</span>
+      <span class="section-desc">Operate on the assignment currently open in your active tab.</span>
+    </div>
+    <button id="solveAndSubmitBtn" class="btn btn-accent">⚡ Auto-Solve & Submit Current</button>
+    <div style="display: flex; gap: 8px;">
+      <button id="explainBtn" class="btn btn-secondary" style="flex: 1;">Fill Only</button>
+      <button id="showQuestionsBtn" class="btn btn-secondary" style="flex: 1;">Copy Questions</button>
+    </div>
+  </div>
+
+  <!-- Videos & Readings Only -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-title">🎬 Media Automation</span>
+      <span class="section-desc">Fast-forward all videos and readings in the background.</span>
+    </div>
+    <button id="completeVideosBtn" class="btn btn-secondary">Complete Videos & Readings Only</button>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="footer">
+    <span>made with ❤️ by <a href="https://sakura-tree.vercel.app/" target="_blank">Arya</a>, <a href="https://github.com/dietcokezerosugar" target="_blank">dietcoke</a> & <a href="https://x.com/snc0x" target="_blank">snc0x</a></span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
